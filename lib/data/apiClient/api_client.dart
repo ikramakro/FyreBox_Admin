@@ -121,7 +121,9 @@ class ApiClient {
   }
 
   post1(
-      {required String baseUrl, required formdata, String? contantType}) async {
+      {required String baseUrl,
+      required dynamic formdata,
+      String? contantType}) async {
     var connected = await NetworkInfo().isConnected();
     ProgressDialogUtils.showProgressDialog();
     if (connected) {

@@ -169,12 +169,11 @@ class Repository {
     return BaseModel.fromJson(jsonResponse);
   }
 
-  Future<BaseModel> addDevice({Map<String, dynamic>? formData}) async {
+  Future<BaseModel> addDevice({dynamic formData}) async {
     final response = await _apiClient.post1(
         baseUrl: 'https://fyreboxhub.com/api/set_data.php',
         formdata: formData,
-        contantType: "application/x-www-form-urlencoded");
-    // final Map<String, dynamic> jsonResponse = json.decode(response.data);
+        contantType: "multipart/form-data");
     return BaseModel.fromJson(response.data);
   }
 

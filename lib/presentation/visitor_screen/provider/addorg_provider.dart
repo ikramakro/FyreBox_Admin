@@ -51,36 +51,35 @@ class AddOrganizationProvider extends ChangeNotifier {
         'org_email': email,
         'org_phone': phone,
         'org_type': type,
-        'org_vat': vat,
+        'org_vat': vat ?? '',
         'org_address': address,
         'org_status': status.toString(),
-        // Add files as MultipartFile for binary data
-
-        // : await MultipartFile.fromFile(
-        //   evacuationMap.readAsBytes(),
-        // ),
       });
-      Map<String, dynamic> data = {
-        if (logo != null)
-          'org_logo': logo != null ? Image.file(File(logo.path)) : "(binary)",
-        //    await MultipartFile.fromFile(
-        // logo.path,
 
-        if (evacuationMap != null)
-          'org_evacuation_map': evacuationMap != null
-              ? Image.file(File(evacuationMap.path))
-              : "(binary)",
-      };
-      // Convert FormData to Map<String, dynamic> for simpler processing
-      final dataMap = await _formDataToMap(formData);
-      dataMap.addAll(data);
-      final response = await _repository.addDevice(formData: dataMap);
+      // Add logo file if present
+      if (logo != null) {
+        formData.files.add(MapEntry(
+          'org_logo',
+          await MultipartFile.fromFile(logo.path, filename: logo.name),
+        ));
+      }
+
+      // Add evacuation map file if present
+      if (evacuationMap != null) {
+        formData.files.add(MapEntry(
+          'org_evacuation_map',
+          await MultipartFile.fromFile(evacuationMap.path,
+              filename: evacuationMap.name),
+        ));
+      }
+
+      final response = await _repository.addDevice(formData: formData);
 
       if (response.sTATUS != "ERROR") {
         notifyListeners();
         showSuccess('Organization added successfully');
       } else {
-        showError('Failed to add organization');
+        showError(response.eRRORDESCRIPTION ?? '');
       }
     } catch (error) {
       showError('An error occurred: $error');
